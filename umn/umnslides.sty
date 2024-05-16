@@ -1,0 +1,146 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{umnslides}[2023/02/12 UMN Slides]
+\newif\ifincludelogo\includelogofalse
+\newif\ifheaderslides\headerslidesfalse
+\DeclareOption{logo}{\includelogotrue}
+\DeclareOption{headerslides}{\headerslidestrue}
+\DeclareOption*{\PackageWarning{umnslides}{Unknown `\CurrentOption`}}
+\ProcessOptions\relax
+
+\RequirePackage{umncolors}
+
+\RequirePackage{tikz}
+\usetikzlibrary{fit,positioning,calc,shapes,backgrounds}
+\usetikzlibrary{shapes.geometric, arrows}
+
+
+\RequirePackage[many]{tcolorbox}
+\RequirePackage{etoolbox}
+\RequirePackage{mathtools}
+\RequirePackage{hyperref}
+\RequirePackage{graphicx}
+\RequirePackage{geometry}
+\RequirePackage{minted}
+\tcbuselibrary{minted}
+
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, citecolor = black, urlcolor=cyan}
+
+\@ifclassloaded{beamer}{
+  \usetheme{Madrid}
+  \ifheaderslides
+    \AtBeginSection[]{
+      \begin{frame}
+        \vfill
+        \centering
+        \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+          {
+            \hypersetup{allcolors=.}
+            \usebeamerfont{title}\insertsectionhead\par%
+          }
+        \end{beamercolorbox}
+        \vfill
+      \end{frame}
+    }
+  \fi
+  \setbeamercolor{frametitle}{fg = UMNGold, bg = UMNMaroon }
+  \setbeamercolor{title}{fg = UMNGold, bg = UMNMaroon }
+  \setbeamercolor{author in head/foot}{fg = UMNGold, bg = UMNDarkMaroon }
+  \setbeamercolor{title in head/foot}{fg = UMNGold, bg = UMNMaroon}
+  \setbeamercolor{date in head/foot}{fg = UMNGold, bg = UMNLightMaroon}
+  \setbeamercolor{section in head/foot}{fg = UMNGold, bg = UMNLightMaroon}
+  \setbeamercolor{button}{bg=UMNMaroon,fg=UMNGold}
+  \setbeamerfont{footnote}{size=\tiny}
+  \setbeamersize{text margin left=4mm,text margin right=6mm}
+  \setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides
+  \setbeamertemplate{enumerate items}[default]%
+  \setbeamercolor{itemize item}{fg = UMNMaroon}
+  \setbeamercolor{itemize subitem}{fg = black}
+  \setbeamercolor{itemize subsubitem}{fg = UMNMaroon}
+  \setbeamercolor{enumerate item}{bg = UMNMaroon}
+  \setbeamercolor{enumerate subitem}{fg = UMNStormy, bg = black}
+  \setbeamercolor{enumerate subsubitem}{bg = UMNMaroon}
+
+  \setbeamertemplate{itemize item}[circle]
+  \setbeamertemplate{itemize subitem}[triangle]
+  \setbeamertemplate{itemize subsubitem}{\raisebox{-0.4em}{\scalebox{3.0}{$\cdot$}}}
+
+  % \setbeamertemplate{itemize/enumerate body begin}{\footnotesize}
+  \setbeamertemplate{itemize/enumerate subbody begin}{\scriptsize}
+  \setbeamertemplate{itemize/enumerate subsubbody begin}{\tiny}
+  \ifincludelogo
+    \titlegraphic{
+      \includegraphics[width=2cm]{goldy.png}
+    }
+    \addtobeamertemplate{frametitle}{}{%
+      \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=north east,yshift=2pt] at (current page.north east) {\includegraphics[height=0.8cm]{goldy.png}};
+      \end{tikzpicture}}
+  \fi
+  \addtobeamertemplate{footline}{\hypersetup{allcolors=.}}{}
+}{
+
+  \ifincludelogo
+    \RequirePackage{background}
+    \backgroundsetup{
+      scale=1,
+      angle=0,
+      opacity=0.5,
+      color=black,
+      contents={\begin{tikzpicture}[remember picture, overlay]
+          \node at ([xshift=-1.5cm, yshift=-1.5cm] current page.north east)
+          {\includegraphics[width = 2cm]{goldy.png}}; 
+        \end{tikzpicture}}
+    }
+  \fi
+
+}
+
+\newtcblisting{codebox}[3][]{
+  minted language=#2,
+  minted options={linenos=true, firstnumber=1, tabsize=4, obeytabs, xleftmargin=1em, breaklines, fontsize=\footnotesize, numbersep=0.75em},
+  listing only,
+  sharpish corners, % better drop shadow
+  boxrule = 0pt,
+  toprule = 4.5pt, % top rule weight
+  enhanced,
+  enlarge top by=5pt,
+  colback = white,
+  before skip = 0.2cm,    % add extra space before the box
+  after skip = 0.5cm,      % add extra space after the box
+  drop fuzzy shadow = black!35,
+  fontupper=\footnotesize\sffamily,
+  fonttitle=\footnotesize\sffamily\color{black},
+  attach boxed title to bottom right={xshift=6pt,yshift=6pt},
+  boxed title style={
+    enhanced,
+    arc=0pt,
+    outer arc=0pt,
+    boxrule = 0pt,
+    colback = white,
+    drop fuzzy shadow = black!35,
+  },
+  #1
+}
+
+
+\newenvironment{twocol}[1][0.5]
+{ 
+  \newdimen\splitterdimen
+  \splitterdimen=#1\textwidth
+  \def\splitcols{\end{column} \begin{column}{\textwidth-\splitterdimen}}%
+  \begin{columns}
+    \begin{column}{\splitterdimen}
+    }
+    {
+    \end{column}
+  \end{columns}
+}
+% \renewenvironment{twocol}{ 
+% \newdimen\splitterdimen{0.5\textwidth}
+% \def\splitcols{\end{column} \begin{column}{\splitterdimen}}
+% \begin{columns} \begin{column}{\splitterdimen}
+%   }{
+%   \end{column}\end{columns}
+% }
+
+\endinput
